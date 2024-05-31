@@ -4,114 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 
 <body>
-    <canvas id="life" width="500" height="500"></canvas>
-    <script>
-        m = document.getElementById("life").getContext("2d")
-
-        draw = (x, y, c, s) => {
-            m.fillStyle = c
-            m.fillRect(x, y, s, s)
-        }
-
-        particles = [];
-
-        particle = (x, y, c) => {
-            return { "x": x, "y": y, "vx": 0, "vy": 0, "color": c }
-        }
-
-        random = () => {
-            return Math.random() * 400 + 50
-        }
-
-        create = (number, color) => {
-            group = []
-            for (let i = 0; i < number; i++) {
-                group.push(particle(random(), random(), color))
-                particles.push(group[i])
-            }
-            return group;
-        }
-
-        rule = (particles1, particles2, g) => {
-            for (i = 0; i < particles1.length; i++) {
-                fx = 0
-                fy = 0
-                for (j = 0; j < particles2.length; j++) {
-                    a = particles1[i]
-                    b = particles2[j]
-
-                    dx = a.x - b.x
-                    dy = a.y - b.y
-
-                    d = Math.sqrt(dx * dx + dy * dy)
-
-                    if (d > 0 && d < 80) {
-                        F = g * 1 / d
-                        fx += (F * dx)
-                        fy += (F * dy)
-                    }
-                }
-                a.vx = (a.vx + fx) * 0.5
-                a.vy = (a.vy + fy) * 0.5
-
-                a.x += a.vx
-                a.y += a.vy
-
-                if (a.x <= 0 || a.x >= 500) { a.vx *= -1 }
-                if (a.y <= 0 || a.y >= 500) { a.vy *= -1 }
-            }
-        }
-
-        colors = []
-
-        colors.push(yellow = create(100, "yellow"))
-        colors.push(red = create(100, "red"))
-        colors.push(blue = create(100, "blue"))
-        colors.push(green = create(100, "green"))
-
-
-
-        axioms = [];
-
-
-        for (i = 0; i < colors.length; i++) {
-            for (j = 0; j < colors.length; j++) {
-                const axiom = {
-                    color1: colors[i],
-                    color2: colors[j],
-                    force: Math.random() - 0.5,
-                };
-
-                console.log('made rulepair:', axiom.color1[0].color, axiom.color2[0].color, axiom.force)
-
-                axioms.push(axiom);
-            }
-
-        }
-
-
-
-        update = () => {
-
-            for (let i = 0; i < axioms.length; i++) {
-                rule(axioms[i].color1, axioms[i].color2, axioms[i].force)
-            }
-
-            m.clearRect(0, 0, 500, 500) // clears the canvas?
-            draw(0, 0, "black", 500)  // draws a black background
-
-            for (i = 0; i < particles.length; i++) {
-                draw(particles[i].x, particles[i].y, particles[i].color, 5)
-            }
-            requestAnimationFrame(update)
-        }
-
-        update();
-    </script>
+    <!-- <canvas id="life" width="800px" height="800px"></canvas> -->
+    <canvas id="life"></canvas>
+    <script src="script.js"></script>
 </body>
 
 </html>
