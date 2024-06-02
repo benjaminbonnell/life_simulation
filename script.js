@@ -1,13 +1,22 @@
 canvas = document.getElementById("life")
 
 canvas.width = window.innerWidth - 20;
-canvas.height= window.innerHeight - 25;
+canvas.height = window.innerHeight - 25;
 m = canvas.getContext("2d")
 
 canvasWidth = canvas.offsetWidth
 canvasHeight = canvas.offsetHeight
 
-console.log(canvasWidth)
+addEventListener("resize", (event) => { });
+onresize = (event) => {
+    canvas.width = window.innerWidth - 20;
+    canvas.height = window.innerHeight - 25;
+
+    canvasWidth = canvas.offsetWidth
+    canvasHeight = canvas.offsetHeight
+
+    console.log(canvasWidth)
+};
 
 draw = (x, y, c, s) => {
     m.fillStyle = c
@@ -34,12 +43,12 @@ create = (number, color) => {
 }
 
 rule = (particles1, particles2, g) => {
-    for (i = 0; i < particles1.length; i++) {
+    for (i = 0; i < particles1.length; i++) {  // for every particle
         fx = 0
         fy = 0
-        for (j = 0; j < particles2.length; j++) {
-            a = particles1[i]
-            b = particles2[j]
+        for (j = 0; j < particles2.length; j++) {  // check against every other particle
+            a = particles1[i]                       // particle a
+            b = particles2[j]                       // particle b
 
             dx = a.x - b.x
             dy = a.y - b.y
@@ -52,6 +61,35 @@ rule = (particles1, particles2, g) => {
                 fy += (F * dy)
             }
         }
+        a.vx = (a.vx + fx) * 0.5
+        a.vy = (a.vy + fy) * 0.5
+
+        a.x += a.vx
+        a.y += a.vy
+
+        if (a.x <= 0 || a.x >= canvasWidth) { a.vx *= -1 }
+        if (a.y <= 0 || a.y >= canvasHeight) { a.vy *= -1 }
+    }
+}
+
+mouseRule = (particles, mouseX, mouseY, g) => {
+    for (i = 0; i < particles.length; i++) {  // for every particle
+        fx = 0
+        fy = 0
+
+        a = particles[i]                       // particle a
+
+        dx = a.x - mouseX
+        dy = a.y - mouseY
+
+        d = Math.sqrt(dx * dx + dy * dy)
+
+        if (d > 0 && d < 80) {
+            F = g * 1 / d
+            fx += (F * dx)
+            fy += (F * dy)
+        }
+
         a.vx = (a.vx + fx) * 0.5
         a.vy = (a.vy + fy) * 0.5
 
@@ -90,13 +128,41 @@ for (i = 0; i < colors.length; i++) {
 
 }
 
+//handling the cursor rule
+var mouseDown = 0;
+document.body.onmousedown = function () {
+    ++mouseDown;
+}
+document.body.onmouseup = function () {
+    --mouseDown;
+}
 
+let mouseX;
+let mouseY;
+
+document.addEventListener("mousemove", (event) => {
+    mouseX = event.clientX; // X-coordinate of the mouse cursor
+    mouseY = event.clientY; // Y-coordinate of the mouse cursor
+});
 
 update = () => {
 
     for (let i = 0; i < axioms.length; i++) {
         rule(axioms[i].color1, axioms[i].color2, axioms[i].force)
     }
+
+
+    if (mouseDown) {
+
+        mouseRule(yellow, mouseX, mouseY, -50)
+        mouseRule(red, mouseX, mouseY, -50)
+        mouseRule(blue, mouseX, mouseY, -50)
+        mouseRule(green, mouseX, mouseY, -50)
+
+        
+
+    }
+
 
     m.clearRect(0, 0, canvasHeight, canvasWidth) // clears the canvas?
     //draw(0, 0, "black", canvasHeight)  // draws a black background
